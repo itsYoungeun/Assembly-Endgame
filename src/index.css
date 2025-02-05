@@ -56,6 +56,7 @@ section.game-status {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   color: #F9F4DA;
   width: 100%;
   max-width: 350px;
@@ -73,6 +74,13 @@ section.game-status.lost {
   background-color: #BA2A2A;
 }
 
+section.game-status.farewell {
+  background-color: #7A5EA7;
+  border: 1px dashed #323232;
+  font-style: italic;
+  font-weight: 400;
+}
+
 section.game-status > h2 {
   font-size: 1.25rem;
   margin: 5px;
@@ -80,6 +88,11 @@ section.game-status > h2 {
 
 section.game-status > p {
   margin: 5px;
+}
+
+section.game-status > p.farewell-message {
+  font-style: italic;
+  font-weight: 400;
 }
 
 section.language-list {
@@ -119,7 +132,7 @@ section.word {
   margin-bottom: 20px;
 }
 
-span.letter {
+section.word > span {
   height: 40px;
   width: 40px;
   background-color: #323232;
@@ -128,6 +141,10 @@ span.letter {
   align-items: center;
   font-size: 1.125rem;
   border-bottom: 1px solid #F9F4DA;
+}
+
+section.word > span.missed-letter {
+  color: #EC5D49;
 }
 
 section.keyboard {
@@ -156,6 +173,11 @@ section.keyboard > button.wrong {
   background-color: #EC5D49;
 }
 
+section.keyboard > button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
 button.new-game {
   background-color: #11B5E5;
   border: 1px solid #D7D7D7;
@@ -166,4 +188,25 @@ button.new-game {
   display: block;
   margin-inline: auto;
   cursor: pointer;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+.confetti {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
