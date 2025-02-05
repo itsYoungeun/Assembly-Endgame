@@ -1,35 +1,134 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect, useRef } from "react"
+import { languages } from "./languages"
+import { clsx } from "clsx"
 
-function App() {
-  const [count, setCount] = useState(0)
+function AssemblyEndgame() {
+  const [ currentWord, setCurrentWord ] = useState("react")
+  const [ guessedLetters, setGuessedLetters ] = useState([])
+  const newGameButtonRef = useRef(null)
+
+  const wrongGuessCount = guessedLetters.filter(letter => !currentWord.includes(letter)).length
+  const isGameWon = currentWord.split("").every(letter => guessedLetters.includes(letter))
+  const isGameLost = wrongGuessCount >= languages.length - 1
+  const isGameOver = isGameWon || isGameLost
+
+  const alphabet = "abcdefghijklmnopqrstuvwxyz"
+
+  function addGuessedLetter(letter) {
+      setGuessedLetters(prevLetters => {
+        const lettersSet = new Set(prevLetters)
+        lettersSet.add(letter)
+        return Array.from(lettersSet)
+      })
+      // prevLetters.includes(letter) ? prevLetters : [...prevLetters, letter]
+  }
+
+  useEffect(() => {
+    if (isGameOver && newGameButtonRef.current) {
+      newGameButtonRef.current.scrollIntoView({ behavior: "smooth", block: "center" })
+    }
+  }, [isGameOver])
+
+  // display languages
+  const languageElements = languages.map((language, index) => {
+    const isLanguageLost = index < wrongGuessCount
+    const className = clsx("language", isLanguageLost && "lost")
+
+    return (
+      <span 
+        className={className}
+        key={language.name} 
+        style={{ backgroundColor: language.backgroundColor, color: language.color }}
+      >
+        {language.name}
+      </span>
+    )
+})
+
+  const letterElements = currentWord.split("").map((letter, index) => (
+    <span 
+      className="letter"
+      key={index}
+    >
+      {guessedLetters.includes(letter) ? letter.toUpperCase() : "_"}
+    </span>
+  ))
+
+  const keyboardElements = alphabet.split("").map((key, index) => {
+    const isGuessed = guessedLetters.includes(key)
+    const isCorrect = isGuessed && currentWord.includes(key)
+    const isWrong = isGuessed && !currentWord.includes(key)
+    const className = clsx({
+      correct: isCorrect,
+      wrong: isWrong,
+    })
+
+    return (
+      <button
+        className={className}
+        key={index}
+        onClick={() => addGuessedLetter(key)}
+      >
+        {key.toUpperCase()}
+      </button>
+    )
+})
+
+  const gameStatusClass = clsx("game-status", {
+    won: isGameWon,
+    lost: isGameLost,
+  }
+  )
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
+    <main>
+      <header>
+        <h1>Assembly: Endgame</h1>
         <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
+          Guess the word within 8 attempts to keep the programming world safe from Assembly!
         </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      </header>
+
+      <section className={gameStatusClass}>
+        {isGameOver ? (
+            isGameWon ? (
+                <>
+                    <h2>You win!</h2>
+                    <p>Well done! 🎉</p>
+                </>
+            ) : (
+                <>
+                    <h2>Game over!</h2>
+                    <p>You lose! Better start learning Assembly 😭</p>
+                </>
+            )
+        ) : (
+                null
+            )
+        }
+      </section>
+
+      <section className="language-list">
+        {languageElements}
+      </section>
+
+      <section className="word">
+        {letterElements}
+      </section>
+
+      <section className="keyboard">
+        {keyboardElements}
+      </section>
+      
+      {isGameOver && 
+        <button 
+          ref={newGameButtonRef}
+          className="new-game">
+          New Game
+        </button>
+      }
+    </main>
   )
 }
 
-export default App
+export default AssemblyEndgame
